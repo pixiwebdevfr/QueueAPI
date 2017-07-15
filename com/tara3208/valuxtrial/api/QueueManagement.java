@@ -4,10 +4,12 @@ import com.tara3208.valuxtrial.main.Main;
 import net.md_5.bungee.BungeeCord;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.connection.Server;
 
-import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Queue;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -18,39 +20,40 @@ import java.util.concurrent.TimeUnit;
 public class QueueManagement
 {
 
-    private HashMap<ProxiedPlayer, Server> queue;
+    private Queue queues;
 
-    public QueueManagement() {
-        this.queue = new HashMap<ProxiedPlayer, Server>();
-    }
-
-    public void addToQueue(ProxiedPlayer proxiedPlayer, Server server, int time) {
-        if (queue.containsKey(proxiedPlayer)) return;
-
-        queue.put(proxiedPlayer, server);
-        proxiedPlayer.sendMessage(new TextComponent(ChatColor.DARK_RED + "[Queue] " + ChatColor.GRAY + " You have been added to a queue! Time delay: " + time + " seconds!"));
+    public QueueManagement(ServerInfo server) {
+        this.queues = new LinkedList();
 
         BungeeCord.getInstance().getScheduler().schedule(Main.getInstance(), () -> {
 
-                proxiedPlayer.connect(server.getInfo());
-                proxiedPlayer.sendMessage(new TextComponent(ChatColor.DARK_RED + "[Queue] " + ChatColor.GRAY + "You have been connected to " + ChatColor.RED + server.getInfo().getName() + "(" + server.getInfo().getPlayers().size() + ")"));
+            Object firstPlayer = queues.element();
+            queues.remove(firstPlayer);
+
+            ProxiedPlayer proxiedPlayer = (ProxiedPlayer) firstPlayer;
+
+            proxiedPlayer.connect(server);
 
                 }
+        , 2, TimeUnit.SECONDS);
+    }
 
-        , time, TimeUnit.SECONDS);
+    public void addToQueue(ProxiedPlayer proxiedPlayer, Server server) {
+        if (queues.contains(proxiedPlayer)) return;
+
+        queues.add(proxiedPlayer);
+        proxiedPlayer.sendMessage(new TextComponent(ChatColor.DARK_RED + "[Queue] " + ChatColor.GRAY + " You have been added to a queue!"));
+
 
     }
 
     public boolean inQueue(ProxiedPlayer proxiedPlayer) {
-        return queue.containsKey(proxiedPlayer);
+        return queues.contains(proxiedPlayer);
     }
 
-    public Server getQueuedServer(ProxiedPlayer proxiedPlayer) {
-        return queue.get(proxiedPlayer);
-    }
 
     public void reboot() {
-        queue.clear();
+        queues.clear();
     }
 
 }

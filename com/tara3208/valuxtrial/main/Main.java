@@ -1,6 +1,7 @@
 package com.tara3208.valuxtrial.main;
 
 import com.tara3208.valuxtrial.api.QueueManagement;
+import net.md_5.bungee.BungeeCord;
 import net.md_5.bungee.api.plugin.Plugin;
 
 /**
@@ -19,7 +20,7 @@ public class Main extends Plugin
     {
 
         instance = this;
-        queueManagement = new QueueManagement();
+        queueManagement = new QueueManagement(BungeeCord.getInstance().getServerInfo("Hub"));
     }
 
     @Override
