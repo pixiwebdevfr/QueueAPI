@@ -1,11 +1,16 @@
 package com.tara3208.valuxtrial.main;
 
+import com.tara3208.valuxtrial.api.FileUtils;
 import com.tara3208.valuxtrial.api.managers.QueueManager;
 import com.tara3208.valuxtrial.api.types.QueueSystem;
 import com.tara3208.valuxtrial.main.events.Connection;
+import com.tara3208.valuxtrial.main.events.Disconnect;
 import net.md_5.bungee.BungeeCord;
+import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.plugin.Plugin;
+import net.md_5.bungee.config.Configuration;
 
+import java.awt.*;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -19,11 +24,16 @@ public class Main extends Plugin
     private static Main instance;
     private static QueueManager queueManager;
 
+    public static String message = "";
+    public static int size = 2;
+    public static List servers;
+
     @Override
     public void onEnable()
     {
         instance = this;
         queueManager = new QueueManager();
+        make();
         registerListeners();
         registerQueues();
     }
@@ -37,11 +47,16 @@ public class Main extends Plugin
 
     public void registerListeners() {
         BungeeCord.getInstance().getPluginManager().registerListener(this, new Connection());
+        BungeeCord.getInstance().getPluginManager().registerListener(this, new Disconnect());
     }
 
     public void registerQueues() {
-        QueueSystem hub = new QueueSystem(BungeeCord.getInstance().getServerInfo("Hub"), TimeUnit.SECONDS, 3);
-        getQueueManagement().addQueue(hub);
+        BungeeCord.getInstance().getConsole().sendMessage(new TextComponent("Successfully added a queue for: "));
+        for (String serverName : FileUtils.getConfiguration("config.yml").getStringList("servers")) {
+            QueueSystem hub = new QueueSystem(BungeeCord.getInstance().getServerInfo(serverName), TimeUnit.SECONDS, size);
+            getQueueManagement().addQueue(hub);
+            BungeeCord.getInstance().getConsole().sendMessage(new TextComponent("- " + serverName));
+        }
     }
 
     public static Main getInstance()
@@ -52,5 +67,49 @@ public class Main extends Plugin
     public static QueueManager getQueueManagement()
     {
         return queueManager;
+    }
+
+    private void make()
+    {
+        if (!getDataFolder().exists())
+        {
+            getDataFolder().mkdir();
+        }
+        Configuration configuration = FileUtils.getConfiguration("config.yml");
+
+        if (configuration == null)
+        {
+            return;
+        }
+
+        // MESSAGE
+        if (configuration.get("message") == null)
+        {
+            configuration.set("message", "&4[Queue] &7You have been added to a queue! Position: &c#%position%/%size%");
+            this.message = "&4[Queue] &7You have been added to a queue! Position: &c#%position%/%size%";
+        } else
+        {
+            this.message = configuration.getString("message");
+        }
+
+        // Delay
+
+        if (configuration.get("delay") == null)
+        {
+            configuration.set("delay", 2);
+            this.size = 2;
+        } else
+        {
+            this.size = configuration.getInt("delay");
+        }
+
+        // Servers
+        if (configuration.get("servers") == null)
+        {
+            configuration.set("servers", "[]");
+            this.servers = null;
+        }
+
+        FileUtils.save(configuration, "config.yml");
     }
 }

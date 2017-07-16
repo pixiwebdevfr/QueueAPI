@@ -18,8 +18,6 @@ public class Connection implements Listener
         if (Main.getInstance().getQueueManagement().hasQueue(e.getTarget()))
         {
             if (Main.getInstance().getQueueManagement().getQueueByServer(e.getTarget()).getQueues().contains(e.getPlayer())) return;
-
-            
             e.setCancelled(true);
             Main.getInstance().getQueueManagement().getQueueByServer(e.getTarget()).addToQueue(e.getPlayer());
         }

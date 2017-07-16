@@ -2,6 +2,7 @@ package com.tara3208.valuxtrial.api.managers;
 
 import com.tara3208.valuxtrial.api.types.QueueSystem;
 import net.md_5.bungee.api.config.ServerInfo;
+import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 import java.util.ArrayList;
 
@@ -60,5 +61,17 @@ public class QueueManager
 
     public boolean hasQueue(ServerInfo serverInfo) {
         return servers.contains(serverInfo);
+    }
+
+    public void removeFromAll(ProxiedPlayer proxiedPlayer) {
+        for (QueueSystem queueSystem : queues) {
+            if (queueSystem.getQueues().contains(proxiedPlayer)) {
+                queueSystem.getQueues().remove(proxiedPlayer);
+            }
+        }
+    }
+
+    public ArrayList getQueues() {
+        return queues;
     }
 }

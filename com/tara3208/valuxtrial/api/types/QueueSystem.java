@@ -1,7 +1,6 @@
 package com.tara3208.valuxtrial.api.types;
 
 import com.tara3208.valuxtrial.main.Main;
-import net.md_5.bungee.BungeeCord;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.config.ServerInfo;
@@ -57,7 +56,7 @@ public class QueueSystem
         if (queues.contains(proxiedPlayer)) return;
 
         queues.add(proxiedPlayer);
-        proxiedPlayer.sendMessage(new TextComponent(ChatColor.DARK_RED + "[Queue] " + ChatColor.GRAY + " You have been added to a queue! Position: " +  ChatColor.RED + "#" + getPosition(proxiedPlayer) + "/" + getQueues().size()));
+        proxiedPlayer.sendMessage(new TextComponent(ChatColor.translateAlternateColorCodes('&', Main.getInstance().message).replaceAll("%position%", String.valueOf(getPosition(proxiedPlayer))).replaceAll("%size%", String.valueOf(getQueues().size()))));
 
 
     }
@@ -113,4 +112,5 @@ public class QueueSystem
 
         return -1;
     }
+
 }
