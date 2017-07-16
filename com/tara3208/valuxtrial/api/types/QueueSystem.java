@@ -46,8 +46,6 @@ public class QueueSystem
 
                 proxiedPlayer.connect(server);
 
-                BungeeCord.getInstance().broadcast(new TextComponent("Connecting " + proxiedPlayer.getName() + " to " + server.getName()));
-
                 queues.remove(proxiedPlayer);
 
             }
