@@ -1,0 +1,5 @@
+name: QueueSystem
+author: Potters
+version: 1.0
+main: com.tara3208.valuxtrial.main.Main
+description: Queue

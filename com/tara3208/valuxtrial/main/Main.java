@@ -1,8 +1,12 @@
 package com.tara3208.valuxtrial.main;
 
-import com.tara3208.valuxtrial.api.QueueManagement;
+import com.tara3208.valuxtrial.api.managers.QueueManager;
+import com.tara3208.valuxtrial.api.types.QueueSystem;
+import com.tara3208.valuxtrial.main.events.Connection;
 import net.md_5.bungee.BungeeCord;
 import net.md_5.bungee.api.plugin.Plugin;
+
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by Tara3208 on 7/15/17.
@@ -13,31 +17,40 @@ public class Main extends Plugin
 {
 
     private static Main instance;
-    private static QueueManagement queueManagement;
+    private static QueueManager queueManager;
 
     @Override
     public void onEnable()
     {
-
         instance = this;
-        queueManagement = new QueueManagement(BungeeCord.getInstance().getServerInfo("Hub"));
+        queueManager = new QueueManager();
+        registerListeners();
+        registerQueues();
     }
 
     @Override
     public void onDisable()
     {
         instance = null;
-        queueManagement = null;
+        queueManager = null;
     }
 
+    public void registerListeners() {
+        BungeeCord.getInstance().getPluginManager().registerListener(this, new Connection());
+    }
+
+    public void registerQueues() {
+        QueueSystem hub = new QueueSystem(BungeeCord.getInstance().getServerInfo("Hub"), TimeUnit.SECONDS, 3);
+        getQueueManagement().addQueue(hub);
+    }
 
     public static Main getInstance()
     {
         return instance;
     }
 
-    public static QueueManagement getQueueManagement()
+    public static QueueManager getQueueManagement()
     {
-        return queueManagement;
+        return queueManager;
     }
 }
