@@ -1,6 +1,6 @@
 package com.tara3208.valuxtrial.main.events;
 
-import com.tara3208.valuxtrial.main.Main;
+import com.tara3208.valuxtrial.main.Queues;
 import net.md_5.bungee.api.event.ServerConnectEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
@@ -15,11 +15,11 @@ public class Connection implements Listener
 
     @EventHandler
     public void onConnect(ServerConnectEvent e) {
-        if (Main.getInstance().getQueueManagement().hasQueue(e.getTarget()))
+        if (Queues.getInstance().getQueueManagement().hasQueue(e.getTarget()))
         {
-            if (Main.getInstance().getQueueManagement().getQueueByServer(e.getTarget()).getQueues().contains(e.getPlayer())) return;
+            if (Queues.getInstance().getQueueManagement().getQueueByServer(e.getTarget()).getQueues().contains(e.getPlayer())) return;
             e.setCancelled(true);
-            Main.getInstance().getQueueManagement().getQueueByServer(e.getTarget()).addToQueue(e.getPlayer());
+            Queues.getInstance().getQueueManagement().getQueueByServer(e.getTarget()).addToQueue(e.getPlayer());
         }
     }
 

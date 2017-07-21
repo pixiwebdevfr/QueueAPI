@@ -18,14 +18,15 @@ import java.util.concurrent.TimeUnit;
  * This has been created privately.
  * Copyright applies. Breach of this is not warranted
  */
-public class Main extends Plugin
+public class Queues extends Plugin
 {
 
-    private static Main instance;
+    private static Queues instance;
     private static QueueManager queueManager;
 
     public static String message = "";
     public static int size = 2;
+    public static int players = 0;
     public static List servers;
 
     @Override
@@ -41,8 +42,8 @@ public class Main extends Plugin
     @Override
     public void onDisable()
     {
-        instance = null;
-        queueManager = null;
+        setNull();
+
     }
 
     public void registerListeners() {
@@ -53,13 +54,13 @@ public class Main extends Plugin
     public void registerQueues() {
         BungeeCord.getInstance().getConsole().sendMessage(new TextComponent("Successfully added a queue for: "));
         for (String serverName : FileUtils.getConfiguration("config.yml").getStringList("servers")) {
-            QueueSystem hub = new QueueSystem(BungeeCord.getInstance().getServerInfo(serverName), TimeUnit.SECONDS, size);
+            QueueSystem hub = new QueueSystem(BungeeCord.getInstance().getServerInfo(serverName), TimeUnit.SECONDS, size, players);
             getQueueManagement().addQueue(hub);
             BungeeCord.getInstance().getConsole().sendMessage(new TextComponent("- " + serverName));
         }
     }
 
-    public static Main getInstance()
+    public static Queues getInstance()
     {
         return instance;
     }
@@ -67,6 +68,14 @@ public class Main extends Plugin
     public static QueueManager getQueueManagement()
     {
         return queueManager;
+    }
+
+    public void setNull() {
+        queueManager = null;
+        instance = null;
+        message = null;
+        size = -1;
+        servers = null;
     }
 
     private void make()
@@ -81,6 +90,7 @@ public class Main extends Plugin
         {
             return;
         }
+
 
         // MESSAGE
         if (configuration.get("message") == null)
@@ -101,6 +111,15 @@ public class Main extends Plugin
         } else
         {
             this.size = configuration.getInt("delay");
+        }
+
+        if (configuration.get("players") == null)
+        {
+            configuration.set("players", 0);
+            this.players = 0;
+        } else
+        {
+            this.players = configuration.getInt("players");
         }
 
         // Servers

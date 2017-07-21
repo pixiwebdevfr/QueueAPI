@@ -1,6 +1,6 @@
 package com.tara3208.valuxtrial.main.events;
 
-import com.tara3208.valuxtrial.main.Main;
+import com.tara3208.valuxtrial.main.Queues;
 import net.md_5.bungee.api.event.PlayerDisconnectEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
@@ -16,6 +16,6 @@ public class Disconnect implements Listener
 
     @EventHandler(priority = EventPriority.LOW)
     public void onDisc(PlayerDisconnectEvent e) {
-        Main.getInstance().getQueueManagement().removeFromAll(e.getPlayer());
+        Queues.getInstance().getQueueManagement().removeFromAll(e.getPlayer());
     }
 }

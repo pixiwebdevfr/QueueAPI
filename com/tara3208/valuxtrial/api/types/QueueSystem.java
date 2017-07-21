@@ -1,6 +1,7 @@
 package com.tara3208.valuxtrial.api.types;
 
-import com.tara3208.valuxtrial.main.Main;
+import com.tara3208.valuxtrial.main.Queues;
+import net.md_5.bungee.BungeeCord;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.config.ServerInfo;
@@ -22,17 +23,19 @@ public class QueueSystem
     private ServerInfo serverInfo;
     private TimeUnit timeUnit;
     private int delay;
+    private int players;
 
 
-    public QueueSystem(ServerInfo server, TimeUnit timeUnit, int delay) {
+    public QueueSystem(ServerInfo server, TimeUnit timeUnit, int delay, int players) {
         this.queues = new LinkedList();
         this.serverInfo = server;
         this.timeUnit = timeUnit;
         this.delay = delay;
+        this.players = players;
 
 
 
-        Main.getInstance().getProxy().getScheduler().schedule(Main.getInstance(), new Runnable() {
+        Queues.getInstance().getProxy().getScheduler().schedule(Queues.getInstance(), new Runnable() {
 
             @Override
             public void run() {
@@ -53,12 +56,14 @@ public class QueueSystem
         }
 
     public void addToQueue(ProxiedPlayer proxiedPlayer) {
-        if (queues.contains(proxiedPlayer)) return;
+        if (players >= BungeeCord.getInstance().getPlayers().size())
+        {
+            if (queues.contains(proxiedPlayer)) return;
 
-        queues.add(proxiedPlayer);
-        proxiedPlayer.sendMessage(new TextComponent(ChatColor.translateAlternateColorCodes('&', Main.getInstance().message).replaceAll("%position%", String.valueOf(getPosition(proxiedPlayer))).replaceAll("%size%", String.valueOf(getQueues().size()))));
+            queues.add(proxiedPlayer);
+            proxiedPlayer.sendMessage(new TextComponent(ChatColor.translateAlternateColorCodes('&', Queues.getInstance().message).replaceAll("%position%", String.valueOf(getPosition(proxiedPlayer))).replaceAll("%size%", String.valueOf(getQueues().size()))));
 
-
+        }
     }
 
     public boolean inQueue(ProxiedPlayer proxiedPlayer) {
@@ -113,4 +118,13 @@ public class QueueSystem
         return -1;
     }
 
+    public int getPlayers()
+    {
+        return players;
+    }
+
+    public void setPlayers(int players)
+    {
+        this.players = players;
+    }
 }
