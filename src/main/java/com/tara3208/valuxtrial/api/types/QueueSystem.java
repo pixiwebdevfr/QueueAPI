@@ -7,6 +7,8 @@ import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.concurrent.TimeUnit;
@@ -19,15 +21,19 @@ import java.util.concurrent.TimeUnit;
 public class QueueSystem
 {
 
-    private java.util.Queue queues;
+    private java.util.Queue queue;
+
     private ServerInfo serverInfo;
+
     private TimeUnit timeUnit;
+
     private int delay;
+
     private int players;
 
 
     public QueueSystem(ServerInfo server, TimeUnit timeUnit, int delay, int players) {
-        this.queues = new LinkedList();
+        this.queue = new LinkedList();
         this.serverInfo = server;
         this.timeUnit = timeUnit;
         this.delay = delay;
@@ -40,15 +46,20 @@ public class QueueSystem
             @Override
             public void run() {
 
-                if (queues.isEmpty()) return;
+                if (queue.isEmpty()) return;
 
-                Object toMove = queues.element();
+                ProxiedPlayer proxiedPlayer = getDonorPlayer();
+                
+                if (proxiedPlayer == null) {
 
-                ProxiedPlayer proxiedPlayer = (ProxiedPlayer) toMove;
+                    Object toMove = queue.element();
+
+                    proxiedPlayer = (ProxiedPlayer) toMove;
+                }
 
                 proxiedPlayer.connect(server);
 
-                queues.remove(proxiedPlayer);
+                queue.remove(proxiedPlayer);
 
             }
         }, 0, delay, timeUnit);
@@ -58,21 +69,23 @@ public class QueueSystem
     public void addToQueue(ProxiedPlayer proxiedPlayer) {
         if (players >= BungeeCord.getInstance().getPlayers().size())
         {
-            if (queues.contains(proxiedPlayer)) return;
+            if (queue.contains(proxiedPlayer)) return;
 
-            queues.add(proxiedPlayer);
-            proxiedPlayer.sendMessage(new TextComponent(ChatColor.translateAlternateColorCodes('&', Queues.getInstance().message).replaceAll("%position%", String.valueOf(getPosition(proxiedPlayer))).replaceAll("%size%", String.valueOf(getQueues().size()))));
+            queue.add(proxiedPlayer);
+            proxiedPlayer.sendMessage(Queues.getInstance().chatMessageType, new TextComponent(ChatColor.translateAlternateColorCodes('&',
+                    Queues.getInstance().message)
+                    .replaceAll("%position%", String.valueOf(getPosition(proxiedPlayer)))
+                    .replaceAll("%size%", String.valueOf(getQueues().size()))));
 
         }
     }
 
     public boolean inQueue(ProxiedPlayer proxiedPlayer) {
-        return queues.contains(proxiedPlayer);
+        return queue.contains(proxiedPlayer);
     }
 
-
     public void reboot() {
-        queues.clear();
+        queue.clear();
     }
 
     public TimeUnit getTimeUnit()
@@ -97,7 +110,7 @@ public class QueueSystem
 
     public Queue getQueues()
     {
-        return queues;
+        return queue;
     }
 
     public ServerInfo getServerInfo()
@@ -107,7 +120,7 @@ public class QueueSystem
 
     public int getPosition(ProxiedPlayer proxiedPlayer) {
         int position = 1;
-        for (Object player : queues) {
+        for (Object player : queue) {
             if (player.equals(proxiedPlayer)) {
                 return position;
             }
@@ -127,4 +140,16 @@ public class QueueSystem
     {
         this.players = players;
     }
+    
+    public ProxiedPlayer getDonorPlayer() {
+        for (Object objectPlayer : queue) {
+            ProxiedPlayer proxiedPlayer = (ProxiedPlayer) objectPlayer;
+
+            if (proxiedPlayer.hasPermission("queuesystem.donor"))
+                return proxiedPlayer;
+        }
+
+        return null;
+    }
+
 }

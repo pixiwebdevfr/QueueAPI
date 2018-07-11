@@ -6,11 +6,13 @@ import com.tara3208.valuxtrial.api.types.QueueSystem;
 import com.tara3208.valuxtrial.main.events.Connection;
 import com.tara3208.valuxtrial.main.events.Disconnect;
 import net.md_5.bungee.BungeeCord;
+import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.config.Configuration;
 
 import java.awt.*;
+import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -25,9 +27,13 @@ public class Queues extends Plugin
     private static QueueManager queueManager;
 
     public static String message = "";
+
     public static int size = 2;
     public static int players = 0;
+
     public static List servers;
+
+    public static ChatMessageType chatMessageType;
 
     @Override
     public void onEnable()
@@ -46,20 +52,6 @@ public class Queues extends Plugin
 
     }
 
-    public void registerListeners() {
-        BungeeCord.getInstance().getPluginManager().registerListener(this, new Connection());
-        BungeeCord.getInstance().getPluginManager().registerListener(this, new Disconnect());
-    }
-
-    public void registerQueues() {
-        BungeeCord.getInstance().getConsole().sendMessage(new TextComponent("Successfully added a queue for: "));
-        for (String serverName : FileUtils.getConfiguration("config.yml").getStringList("servers")) {
-            QueueSystem hub = new QueueSystem(BungeeCord.getInstance().getServerInfo(serverName), TimeUnit.SECONDS, size, players);
-            getQueueManagement().addQueue(hub);
-            BungeeCord.getInstance().getConsole().sendMessage(new TextComponent("- " + serverName));
-        }
-    }
-
     public static Queues getInstance()
     {
         return instance;
@@ -76,6 +68,24 @@ public class Queues extends Plugin
         message = null;
         size = -1;
         servers = null;
+        chatMessageType = null;
+    }
+
+    private void registerListeners() {
+        BungeeCord.getInstance().getPluginManager().registerListener(this, new Connection());
+        BungeeCord.getInstance().getPluginManager().registerListener(this, new Disconnect());
+    }
+
+    private void registerQueues() {
+        BungeeCord.getInstance().getConsole().sendMessage(new TextComponent("Successfully added a queue for: "));
+
+        Configuration configuration = FileUtils.getConfiguration("config.yml");
+
+        configuration.getStringList("servers").forEach(serverName -> {
+            QueueSystem hub = new QueueSystem(BungeeCord.getInstance().getServerInfo(serverName), TimeUnit.SECONDS, size, players);
+            getQueueManagement().addQueue(hub);
+            BungeeCord.getInstance().getConsole().sendMessage(new TextComponent("- " + serverName));
+        });
     }
 
     private void make()
@@ -129,6 +139,15 @@ public class Queues extends Plugin
             this.servers = null;
         }
 
+        if (configuration.get("messageType") == null)
+        {
+            configuration.set("messageType", "CHAT");
+            this.chatMessageType = ChatMessageType.CHAT;
+        } else {
+            this.chatMessageType = ChatMessageType.valueOf(configuration.getString("messageType"));
+        }
+
         FileUtils.save(configuration, "config.yml");
     }
+
 }
