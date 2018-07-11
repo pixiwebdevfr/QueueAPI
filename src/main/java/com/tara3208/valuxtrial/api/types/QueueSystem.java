@@ -7,8 +7,6 @@ import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.concurrent.TimeUnit;
@@ -18,8 +16,7 @@ import java.util.concurrent.TimeUnit;
  * This has been created privately.
  * Copyright applies. Breach of this is not warranted
  */
-public class QueueSystem
-{
+public class QueueSystem {
 
     private java.util.Queue queue;
 
@@ -40,7 +37,6 @@ public class QueueSystem
         this.players = players;
 
 
-
         Queues.getInstance().getProxy().getScheduler().schedule(Queues.getInstance(), new Runnable() {
 
             @Override
@@ -49,7 +45,7 @@ public class QueueSystem
                 if (queue.isEmpty()) return;
 
                 ProxiedPlayer proxiedPlayer = getDonorPlayer();
-                
+
                 if (proxiedPlayer == null) {
 
                     Object toMove = queue.element();
@@ -64,11 +60,10 @@ public class QueueSystem
             }
         }, 0, delay, timeUnit);
 
-        }
+    }
 
     public void addToQueue(ProxiedPlayer proxiedPlayer) {
-        if (players >= BungeeCord.getInstance().getPlayers().size())
-        {
+        if (players >= BungeeCord.getInstance().getPlayers().size()) {
             if (queue.contains(proxiedPlayer)) return;
 
             queue.add(proxiedPlayer);
@@ -88,33 +83,27 @@ public class QueueSystem
         queue.clear();
     }
 
-    public TimeUnit getTimeUnit()
-    {
+    public TimeUnit getTimeUnit() {
         return timeUnit;
     }
 
-    public void setTimeUnit(TimeUnit timeUnit)
-    {
+    public void setTimeUnit(TimeUnit timeUnit) {
         this.timeUnit = timeUnit;
     }
 
-    public int getDelay()
-    {
+    public int getDelay() {
         return delay;
     }
 
-    public void setDelay(int delay)
-    {
+    public void setDelay(int delay) {
         this.delay = delay;
     }
 
-    public Queue getQueues()
-    {
+    public Queue getQueues() {
         return queue;
     }
 
-    public ServerInfo getServerInfo()
-    {
+    public ServerInfo getServerInfo() {
         return serverInfo;
     }
 
@@ -131,16 +120,14 @@ public class QueueSystem
         return -1;
     }
 
-    public int getPlayers()
-    {
+    public int getPlayers() {
         return players;
     }
 
-    public void setPlayers(int players)
-    {
+    public void setPlayers(int players) {
         this.players = players;
     }
-    
+
     public ProxiedPlayer getDonorPlayer() {
         for (Object objectPlayer : queue) {
             ProxiedPlayer proxiedPlayer = (ProxiedPlayer) objectPlayer;

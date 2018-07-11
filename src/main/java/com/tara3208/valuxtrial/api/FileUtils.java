@@ -12,14 +12,13 @@ import java.io.IOException;
  * This has been created privately.
  * Copyright applies. Breach of this is not warranted
  */
-public class FileUtils
-{
+public class FileUtils {
 
     public final static String DIRECTORY = "plugins/QueueSystem/";
 
     public static Configuration getConfiguration(String name) {
         final File file = getFile(name);
-        if(file == null) {
+        if (file == null) {
             return null;
         }
         try {
@@ -40,9 +39,9 @@ public class FileUtils
 
     private static File getFile(String name) {
         final File file = new File(DIRECTORY, name);
-        if(!file.exists()) {
+        if (!file.exists()) {
             try {
-                if(!file.createNewFile()) {
+                if (!file.createNewFile()) {
                     return null;
                 }
             } catch (IOException e) {

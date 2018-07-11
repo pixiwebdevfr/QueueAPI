@@ -11,8 +11,7 @@ import net.md_5.bungee.event.EventPriority;
  * This has been created privately.
  * Copyright applies. Breach of this is not warranted
  */
-public class Disconnect implements Listener
-{
+public class Disconnect implements Listener {
 
     @EventHandler(priority = EventPriority.LOW)
     public void onDisc(PlayerDisconnectEvent e) {

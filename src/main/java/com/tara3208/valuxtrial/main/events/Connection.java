@@ -10,14 +10,13 @@ import net.md_5.bungee.event.EventHandler;
  * This has been created privately.
  * Copyright applies. Breach of this is not warranted
  */
-public class Connection implements Listener
-{
+public class Connection implements Listener {
 
     @EventHandler
     public void onConnect(ServerConnectEvent e) {
-        if (Queues.getInstance().getQueueManagement().hasQueue(e.getTarget()))
-        {
-            if (Queues.getInstance().getQueueManagement().getQueueByServer(e.getTarget()).getQueues().contains(e.getPlayer())) return;
+        if (Queues.getInstance().getQueueManagement().hasQueue(e.getTarget())) {
+            if (Queues.getInstance().getQueueManagement().getQueueByServer(e.getTarget()).getQueues().contains(e.getPlayer()))
+                return;
             e.setCancelled(true);
             Queues.getInstance().getQueueManagement().getQueueByServer(e.getTarget()).addToQueue(e.getPlayer());
         }

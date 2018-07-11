@@ -11,14 +11,12 @@ import java.util.ArrayList;
  * This has been created privately.
  * Copyright applies. Breach of this is not warranted
  */
-public class QueueManager
-{
+public class QueueManager {
 
     private ArrayList<QueueSystem> queues;
     private ArrayList<ServerInfo> servers;
 
-    public QueueManager()
-    {
+    public QueueManager() {
         this.queues = new ArrayList<QueueSystem>();
         this.servers = new ArrayList<ServerInfo>();
     }
@@ -32,8 +30,7 @@ public class QueueManager
     }
 
     public void removeQueue(QueueSystem queueSystem) {
-        if (queues.contains(queueSystem))
-        {
+        if (queues.contains(queueSystem)) {
             servers.remove(queueSystem.getServerInfo());
             queues.remove(queueSystem);
         }
